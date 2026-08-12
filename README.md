@@ -6,15 +6,15 @@
 [![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)](https://streamlit.io/)
 [![DSPy](https://img.shields.io/badge/DSPy-Framework-blueviolet?style=for-the-badge)](https://github.com/stanfordnlp/dspy)
 
-A complete end-to-end framework for building, evaluating, and deploying **Local Retrieval-Augmented Generation (RAG)** systems and **Declarative LLM Workflows**. 
+A complete framework for building, evaluating, and deploying **Local Retrieval-Augmented Generation (RAG)** systems and **Declarative LLM Workflows**. 
 
-This repository covers the full RAG lifecycle: from raw PDF parsing, text chunking, and embedding generation using Hugging Face models (`all-mpnet-base-v2`), to GPU-accelerated similarity search, dynamic prompt formatting, local/cloud LLM inference (`Phi-3.5`, `Gemma`, `GPT-4o-mini`), interactive Streamlit web UI deployment, and advanced agentic evaluation using DSPy.
+This repository covers the end-to-end RAG lifecycle: from raw PDF parsing, text chunking, and embedding generation using Hugging Face models (`all-mpnet-base-v2`), to GPU-accelerated similarity search, dynamic prompt formatting, LLM inference (`Phi-3.5`, `Gemma`, `GPT-4o-mini`), interactive Streamlit web UI deployment, and advanced agentic evaluation using DSPy.
 
 ---
 
-## 💡 Overview & Key Architecture
+## 💡 System Architecture
 
-Traditional Large Language Models (LLMs) often suffer from knowledge cutoffs and hallucinations when queried on domain-specific documents. This project implements a privacy-focused, zero-cost, local-first RAG pipeline that operates directly on standard consumer GPU hardware.
+Traditional Large Language Models (LLMs) often suffer from knowledge cutoffs and hallucinations when queried on domain-specific documents. This project implements a privacy-focused, zero-cost, local RAG pipeline operating on standard GPU hardware.
 
 ```
                     +------------------------------------+
@@ -49,10 +49,10 @@ Traditional Large Language Models (LLMs) often suffer from knowledge cutoffs and
 
 ## ✨ Features
 
-- 📑 **PDF Ingestion & Smart Text Chunking**: Extracts text from large PDFs (e.g., 1,200+ page textbooks) using PyMuPDF (`fitz`) and splits them into semantically coherent sentence groups via spaCy.
+- 📑 **PDF Ingestion & Smart Text Chunking**: Extracts text from large PDFs (e.g., 1,200+ page `human-nutrition-text.pdf`) using PyMuPDF (`fitz`) and splits them into semantically coherent sentence groups via spaCy.
 - ⚡ **GPU Vector Indexing**: Encodes document passages into 768-dimensional dense vectors using `sentence-transformers/all-mpnet-base-v2` and performs sub-millisecond similarity scoring using PyTorch tensor operations.
-- 🎯 **Context-Augmented Few-Shot Generation**: Augments input queries with retrieved top-$k$ context chunks and formatted few-shot prompt templates to guarantee factual accuracy and eliminate hallucinations.
-- 💻 **Interactive Streamlit Web Interface**: Complete web application (`streamlit/main.py`) featuring response streaming, session state management, and real-time query retrieval.
+- 🎯 **Context-Augmented Few-Shot Generation**: Augments queries with retrieved top-$k$ context chunks and formatted few-shot prompt templates to ensure factual accuracy and eliminate hallucinations.
+- 💻 **Interactive Streamlit Web Interface**: Modular web application (`streamlit/main.py`) featuring response streaming, session state management, and real-time query retrieval.
 - 🛠️ **Declarative RAG & ReAct Agents (DSPy)**: Incorporates Stanford's DSPy framework for programmatic prompt optimization, multi-hop reasoning, and tool-augmented ReAct agents (`PythonInterpreter`, `ColBERTv2`).
 - 🔍 **Embedding Knowledge Base & Intent Classifier**: Intent recognition engine (`debugger embeddings/`) mapping incoming user prompts to structured knowledge base tags.
 
@@ -62,22 +62,19 @@ Traditional Large Language Models (LLMs) often suffer from knowledge cutoffs and
 
 ```
 .
-├── 00-simple-local-rag.ipynb      # Main step-by-step notebook: RAG from scratch
-├── Learn RAG.ipynb                 # Interactive learning notebook & pipeline walkthrough
+├── Learn RAG.ipynb                 # Core notebook: Step-by-step local RAG implementation
 ├── requirements.txt               # Project dependencies
 ├── human-nutrition-text.pdf       # Sample 1,200-page dataset (Human Nutrition textbook)
-├── text_chunks_and_embeddings.csv  # Pre-computed document embeddings CSV
 ├── streamlit/                     # Full-stack Web Application
 │   ├── main.py                    # Streamlit frontend & chat interface
-│   ├── rag.py                     # Retrieval and HF Inference client integration
-│   └── read_embeddings.py         # Fast CSV-to-GPU tensor vector loader
+│   ├── rag.py                     # Retrieval engine & Hugging Face Inference client integration
+│   └── read_embeddings.py         # CSV-to-GPU tensor vector loader
 ├── docker-dataset/                # Advanced DSPy & Benchmark Workflows
 │   ├── RAG DSPy.ipynb             # Declarative RAG module with DSPy & FAISS
 │   ├── SOP Evaluation.ipynb       # ReAct Agents & SOP evaluation pipelines
 │   └── Dockerfiles-dataset.ipynb  # Tech corpus QA benchmark datasets
-├── debugger embeddings/           # Semantic Intent Recognition Module
-│   └── Embedding Knowledge Base.ipynb # Intent classification via vector distance
-└── images/                        # Architecture diagrams & visual assets
+└── debugger embeddings/           # Semantic Intent Recognition Module
+    └── Embedding Knowledge Base.ipynb # Intent classification via vector distance
 ```
 
 ---
@@ -108,7 +105,7 @@ Clone the repository and install the required dependencies:
 git clone https://github.com/KareemEl-Giushy/LLM-RAG-Implementation.git
 cd LLM-RAG-Implementation
 
-# Create and activate a virtual environment (optional but recommended)
+# Create and activate a virtual environment
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 
@@ -123,20 +120,20 @@ python -m spacy download en_core_web_sm
 
 ## 🏃 Running the Project
 
-### Option A: Interactive Notebooks (End-to-End Walkthrough)
+### Option A: Interactive Learning Notebook
 
 Launch Jupyter Notebook to explore the RAG implementation step-by-step:
 
 ```bash
-jupyter notebook 00-simple-local-rag.ipynb
+jupyter notebook "Learn RAG.ipynb"
 ```
 
-Key stages inside the notebook:
-1. PDF Text Extraction & Cleaning
-2. Sentence Segmentation & Overlapping Chunk Creation
-3. Vector Embedding Generation & GPU Indexing
+Key pipeline stages inside `Learn RAG.ipynb`:
+1. PDF Text Extraction & Cleaning (`PyMuPDF`)
+2. Sentence Segmentation & Overlapping Chunk Creation (`spaCy`)
+3. Vector Embedding Generation & GPU Indexing (`sentence-transformers`)
 4. Top-K Vector Search (`torch.topk` & Dot Product Similarity)
-5. Hugging Face / PyTorch Local LLM Generation
+5. Context-Augmented Few-Shot Prompt Formatting & LLM Generation
 
 ### Option B: Streamlit Web Application
 
